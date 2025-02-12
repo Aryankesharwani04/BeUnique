@@ -15,8 +15,8 @@ function Container() {
         const username = document.getElementById("username").value;
 
         try {
-            // const response = await fetch("http://localhost:8000/checkUsername", {
-            const response = await fetch("https://be-unique-api.vercel.app/checkUsername", {
+            const response = await fetch("http://localhost:8000/checkUsername", {
+            // const response = await fetch("https://be-unique-api.vercel.app/checkUsername", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -88,7 +88,7 @@ function Container() {
                     </div>
                 </form>
                 <div className='flex-col text-center justify-center items-center'>
-                    <h3 className='mb-4 text-lg font-medium mt-4 text-200'>Can be used in</h3>
+                    <h3 className='mb-4 text-lg font-medium mt-4 text-200'>Available at</h3>
                     {verify ? 
                         <div className='flex-col justify-center items-center font-bold text-center pl-5 text-700'>
                             <p className='pl-76 mb-2 flex gap-2'>LinkedIn { linkedin ? <img width="24" height="24" src="https://img.icons8.com/color/48/verified-account--v1.png" alt="verified"/> : <img width="24" height="24" src="https://img.icons8.com/ios/50/verified-account.png" alt="n/a"/> } </p>
