@@ -67,24 +67,38 @@ app.post("/checkUsername", async (req, res) => {
         const browser = await puppeteer.launch({ headless: "new" });
         const page = await browser.newPage();
 
-        await loginToLinkedIn(page);
+        console.log("🔵 Attempting to log in to LinkedIn...");
+        const loginSuccess = await loginToLinkedIn(page);
+        if (!loginSuccess) {
+            console.error("🔴 Login failed. Exiting...");
+            res.status(500).json({ error: "Login failed" });
+            return;
+        }
 
         for (const link of links) {
-            console.log(`Checking ${link.name}...`);
+            console.log(`🔵 Checking ${link.name} for username: ${username}...`);
             const response = await page.goto(link.url, { waitUntil: "domcontentloaded", timeout: 15000 });
 
             const linkedinURL = "https://www.linkedin.com/404/";
             const currURL = page.url();
-            
             console.log(currURL);
+            console.log(response.status());
+            
+            console.log(`Current URL: ${currURL}`);
 
-            if(link.name === "linkedin" && linkedinURL === currURL){
-                availability[link.name] = true;
-            }else if(response.status() !== 404) {
-                availability[link.name] = false;
-            }else{
-                availability[link.name] = true;
+            if (link.name === "linkedin") {
+                if (currURL === linkedinURL) {
+                    availability[link.name] = false; // Username does not exist
+                } else {
+                    availability[link.name] = true; // Username exists
+                }
+            } else if (response.status() === 404) {
+                availability[link.name] = false; // Username does not exist
+            } else {
+                availability[link.name] = true; // Username exists
             }
+
+            console.log(`🔵 ${link.name} availability: ${availability[link.name]}`);
         }
 
         await browser.close();
