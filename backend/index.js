@@ -3,6 +3,7 @@ import cors from "cors";
 import puppeteer from "puppeteer-extra";
 import StealthPlugin from "puppeteer-extra-plugin-stealth";
 import dotenv from 'dotenv';
+
 dotenv.config();
 puppeteer.use(StealthPlugin()); 
 const app = express();
@@ -12,6 +13,7 @@ const LOGIN_URL = "https://www.linkedin.com/login";
 const FEED_URL = "https://www.linkedin.com/feed/";
 const USERNAME = process.env.LINKEDIN_EMAIL;
 const PASSWORD = process.env.LINKEDIN_PASSWORD;
+
 async function loginToLinkedIn(page) {
     console.log("🔵 Navigating to LinkedIn login page...");
     await page.goto(LOGIN_URL, { waitUntil: "domcontentloaded", timeout: 30000 });
@@ -83,7 +85,7 @@ app.post("/checkUsername", async (req, res) => {
     }
     res.json(availability);
 });
-const PORT = 8000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });
