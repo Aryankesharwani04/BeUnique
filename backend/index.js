@@ -9,6 +9,7 @@ puppeteer.use(StealthPlugin());
 const app = express();
 app.use(cors());
 app.use(express.json());
+
 const LOGIN_URL = "https://www.linkedin.com/login";
 const FEED_URL = "https://www.linkedin.com/feed/";
 const USERNAME = process.env.LINKEDIN_EMAIL;
@@ -55,16 +56,14 @@ app.post("/checkUsername", async (req, res) => {
   ];
   try {
     console.log("Launching browser...");
-    // Updated puppeteer launch options for Render
     const browser = await puppeteer.launch({
       headless: "new",
       args: [
         "--no-sandbox",
         "--disable-setuid-sandbox",
         "--disable-dev-shm-usage",
-      ],
-      // Use the executable path for Chrome available on Render
-      executablePath: process.env.CHROME_BIN || "/usr/bin/google-chrome"
+      ]
+      // Note: No explicit executablePath needed; Puppeteer will use its bundled Chromium
     });
     
     const page = await browser.newPage();
