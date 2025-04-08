@@ -58,7 +58,6 @@ app.post("/checkUsername", async (req, res) => {
     console.log("Launching browser...");
     const browser = await puppeteer.launch({
       headless: "new",
-      executablePath: process.env.CHROMIUM_PATH || puppeteer.executablePath(),
       args: [
         "--no-sandbox",
         "--disable-setuid-sandbox",
