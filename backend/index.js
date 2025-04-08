@@ -57,12 +57,15 @@ app.post("/checkUsername", async (req, res) => {
   try {
     console.log("Launching browser...");
     const browser = await puppeteer.launch({
-      headless: "new",
+      executablePath: '/opt/render/.cache/puppeteer/chrome/linux-*/chrome-linux64/chrome',
       args: [
-        "--no-sandbox",
-        "--disable-setuid-sandbox",
-        "--disable-dev-shm-usage",
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage', // Critical for low-memory environments
+        '--single-process' // Reduces memory usage
       ],
+      headless: 'new', // Use the new Headless mode
+      ignoreHTTPSErrors: true,
     });
     
     const page = await browser.newPage();
