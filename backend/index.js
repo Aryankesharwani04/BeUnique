@@ -57,7 +57,7 @@ app.post("/checkUsername", async (req, res) => {
   try {
     console.log("Launching browser...");
     const browser = await puppeteer.launch({
-      executablePath: '/opt/render/.cache/puppeteer/chrome/linux-*/chrome-linux64/chrome',
+      executablePath: '/opt/render/.cache/puppeteer/chrome/linux-133.0.6943.53/chrome-linux64/chrome',
       args: [
         '--no-sandbox',
         '--disable-setuid-sandbox',
