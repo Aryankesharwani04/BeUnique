@@ -58,12 +58,12 @@ app.post("/checkUsername", async (req, res) => {
     console.log("Launching browser...");
     const browser = await puppeteer.launch({
       headless: "new",
+      executablePath: process.env.CHROMIUM_PATH || puppeteer.executablePath(),
       args: [
         "--no-sandbox",
         "--disable-setuid-sandbox",
         "--disable-dev-shm-usage",
-      ]
-      // Note: No explicit executablePath needed; Puppeteer will use its bundled Chromium
+      ],
     });
     
     const page = await browser.newPage();
