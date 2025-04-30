@@ -15,8 +15,8 @@ function Container() {
         const username = document.getElementById("username").value;
 
         try {
-            // const response = await fetch("http://localhost:8000/checkUsername", {
-            const response = await fetch("https://beunique.onrender.com/checkUsername", {
+            const response = await fetch("http://localhost:8000/checkUsername", {
+            // const response = await fetch("https://beunique.onrender.com/checkUsername", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
