@@ -56,7 +56,8 @@ async function loginToLinkedIn(page) {
 async function checkWithHead(url) {
   try {
     const res = await axios.head(url, { validateStatus: () => true });
-    return res.status === 404;
+    console.log(`HEAD request to ${url} returned status: ${res.status}`);
+    return res.status === 400 || res.status === 404 || res.status === 410 || res.status === 403;
   } catch (err) {
     console.error(`Error checking HEAD for ${url}:`, err);
     return false;
@@ -114,8 +115,10 @@ app.post("/checkUsername", async (req, res) => {
   const githubUrl = `https://www.github.com/${username}`;
   availability.github = await checkWithHead(githubUrl);
 
+
   // Check LeetCode via HEAD request
   const leetcodeUrl = `https://www.leetcode.com/u/${username}`;
+  
   availability.leetcode = await checkWithHead(leetcodeUrl);
 
   console.log("✅ Availability results:", availability);
