@@ -1,115 +1,211 @@
-import React, { useEffect, useState } from 'react';
-import './Container.css';
-import verifyVideo from './assets/verify.mp4'
+import React, { useEffect, useState, useRef } from 'react';
+import { FaLinkedin, FaGithub, FaCode } from 'react-icons/fa';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import './Container.css'; 
 
-function Container() {
-    const [linkedin, setLinkedin] = useState(false);
-    const [github, setGithub] = useState(false);
-    const [leetcode, setLeetcode] = useState(false);
-    const [verify, setVerify] = useState(false);
-    const [inputValue, setInputValue] = useState("");
-    const [mode, setMode] = useState(false);
+export default function Container() {
+  const [availability, setAvailability] = useState({
+    linkedin: null,
+    github: null,
+    leetcode: null,
+  });
+  const [loading, setLoading] = useState(false);
+  const [inputValue, setInputValue] = useState('');
+  const [darkMode, setDarkMode] = useState(false);
+  const inputRef = useRef(null);
 
-    async function checkUsername(event) {
-        event.preventDefault();
-        const username = document.getElementById("username").value;
-
-        try {
-            const response = await fetch("https://beunique.onrender.com/checkUsername", {
-            // const response = await fetch("https://beunique.onrender.com/checkUsername", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ username }),
-            });
-
-            const data = await response.json();
-            setLinkedin(data.linkedin);
-            setGithub(data.github);
-            setLeetcode(data.leetcode);
-            setVerify(true);
-        } catch (error) {
-            console.error("Error checking username:", error);
-        }
+  useEffect(() => {
+    const storedTheme = localStorage.getItem('darkMode');
+    if (storedTheme !== null) {
+      setDarkMode(storedTheme === 'true');
     }
+  }, []);
 
-    function changeMode(){
-        const d = document.querySelector('body');
-        if(!mode){
-            d.style.backgroundColor = "#ffffff";
-            d.style.color = "#000000";
-        }else{
-            d.style.backgroundColor = "";
-            d.style.color = "";
-        }
-        setMode(!mode);
+  useEffect(() => {
+    const root = document.documentElement;
+    if (darkMode) {
+      root.classList.add('dark');
+    } else {
+      root.classList.remove('dark');
     }
+    localStorage.setItem('darkMode', darkMode);
+  }, [darkMode]);
 
-    useEffect(() => {
-        setVerify(false);
-    }, [inputValue]);
-               
-    return (
-        <div className='w-screen h-screen flex justify-between items-center p-6 rounded-lg shadow-lg'>
-            <div className='w-2/5 p-6'>
-                <h1 className='text-4xl font-bold text-600 mb-4'>Be Unique</h1>
-                <p className='text-700 mb-2'>
-                    <span>Ti</span><span>r</span>ed of selecting new unique or common username at everyplace. We are here to help you select an username easily for all official platforms.
-                     These username will help you identify yourself uniquely from everyone.
-                </p>
-                <p className='text-700 font-bold text-2xl mb-4'>Let's choose your new unique official username.</p>
-            </div>
-            <div className='w-3/5 p-4 flex-col justify-center items-center'>
-                <div className="flex justify-end relative bottom-18">
-                    {mode ? 
-                        <i className="ri-moon-line text-black text-2xl bg-gray-200 rounded-full p-3 cursor-pointer" title='Dark Mode' onClick={changeMode}></i>
-                        : 
-                        <i className="ri-moon-fill text-white text-2xl bg-gray-700 rounded-full p-3 cursor-pointer" title='Light Mode' onClick={changeMode}></i>
-                        }
-                    </div>   
-                <form className='w-auto'>
-                    <h1 className='text-2xl font-bold mb-2 text-700'>tyPe YouR iDeal uSeRnAme</h1>
-                    <div className='flex flex-col justify-center items-center'>
-                        <input 
-                            type="text" 
-                            name="username" 
-                            id="username" 
-                            value={inputValue}
-                            onChange={(e) => setInputValue(e.target.value)}
-                            className='outline-none w-96 border border-violet-300 rounded-md p-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500'
-                        />
-                        <input 
-                            type="submit" 
-                            value="Check" 
-                            onClick={checkUsername} 
-                            className='bg-indigo-600 text-white font-semibold py-2 px-4 rounded-tr-md rounded-bl-md hover:bg-blue-700 transition duration-300 mt-4'
-                        />
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
+
+  async function checkUsername(e) {
+    e.preventDefault();
+    if (!inputValue.trim()) return;
+
+    setLoading(true);
+    setAvailability({ linkedin: null, github: null, leetcode: null });
+
+    try {
+      const res = await fetch('https://beunique.onrender.com/checkUsername', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: inputValue.trim() }),
+      });
+      const data = await res.json();
+      const updated = {
+        linkedin: data.linkedin ?? false,
+        github: data.github ?? false,
+        leetcode: data.leetcode ?? false,
+      };
+      setAvailability(updated);
+
+      // Show toast for available platforms
+      Object.entries(updated).forEach(([key, value]) => {
+        if (value) {
+          toast.success(`${key.charAt(0).toUpperCase() + key.slice(1)} username is available!`, {
+            position: 'top-right',
+            autoClose: 3000,
+          });
+        }
+      });
+    } catch {
+      setAvailability({ linkedin: false, github: false, leetcode: false });
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const platforms = ['LinkedIn', 'GitHub', 'LeetCode'];
+  const icons = [<FaLinkedin />, <FaGithub />, <FaCode />];
+  const urls = [
+    (username) => `https://www.linkedin.com/in/${username}`,
+    (username) => `https://github.com/${username}`,
+    (username) => `https://leetcode.com/u/${username}`,
+  ];
+
+  return (
+    <div className="min-h-screen flex flex-col md:flex-row transition-colors container relative">
+      <ToastContainer />
+      <aside className="w-full md:w-1/3 p-8 flex flex-col sidebar">
+        <h1 className="text-4xl font-extrabold mb-4 text-[var(--text-100)]">
+          Be<span className="text-[var(--accent-100)]">Unique</span>
+        </h1>
+        <p className="mb-6 text-lg text-[var(--text-200)]">
+          Tired of picking usernames everywhere? Find a unique handle across platforms.
+        </p>
+
+        <button
+          onClick={() => setDarkMode((prev) => !prev)}
+          className="mt-auto p-3 rounded-full shadow transition-transform duration-500 mode-toggle w-12 h-12 flex items-center justify-center"
+          aria-label="Toggle dark mode"
+          style={{
+            fontSize: '1.5rem',
+            transform: darkMode ? 'rotate(180deg)' : 'rotate(0deg)',
+            transition: 'transform 0.4s ease-in-out',
+            background: 'var(--bg-300)',
+          }}
+        >
+          {darkMode ? '🌙' : '🌞'}
+        </button>
+      </aside>
+
+      <main className="w-full md:w-2/3 p-8 flex flex-col items-center justify-center space-y-6">
+        <h2 className="text-2xl font-bold" style={{ color: 'var(--text-200)' }}>
+          Your Ideal Username
+        </h2>
+        <form
+          onSubmit={checkUsername}
+          className="w-full max-w-full md:max-w-md flex flex-col space-y-4"
+        >
+          <input
+            ref={inputRef}
+            type="text"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            placeholder="Enter username..."
+            aria-label="Username input"
+            className="w-full p-3 rounded-lg focus:outline-none focus:ring-2 input"
+            style={{
+              borderColor: 'var(--primary-200)',
+              background: 'var(--bg-200)',
+              color: 'var(--text-200)',
+            }}
+            disabled={loading}
+          />
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-3 rounded-lg font-semibold transition-opacity btn-primary"
+            style={{
+              background: 'var(--primary-200)',
+              color: 'var(--text-100)',
+            }}
+            aria-label="Check username availability"
+          >
+            {loading ? (
+              <div className="flex items-center justify-center gap-2">
+                <div className="w-5 h-5 rounded-full animate-spin border-2 border-[var(--bg-100)] border-t-[var(--primary-100)]" />
+                <span>Checking...</span>
+              </div>
+            ) : (
+              'Check'
+            )}
+          </button>
+        </form>
+
+        <section className="mt-6 w-full max-w-full md:max-w-md">
+            <h3 className="text-xl font-medium mb-4" style={{ color: 'var(--text-200)' }}>
+                Availability
+            </h3>
+            <ul className="space-y-3">
+                {platforms.map((plat, i) => {
+                const key = plat.toLowerCase();
+                const status = availability[key];
+                const url = urls[i](inputValue);
+
+                return (
+                    <li
+                    key={plat}
+                    className={`flex justify-between items-center p-3 rounded-lg shadow-sm transform transition-all duration-300 hover:-translate-y-1 scale-95 platform-item ${
+                        status === null ? 'opacity-50' : 'opacity-100 scale-100'
+                    }`}
+                    style={{
+                        background: 'var(--bg-300)',
+                        transition: 'opacity 0.4s ease, transform 0.4s ease',
+                    }}
+                    >
+                    <div className="flex items-center gap-3 text-[var(--text-200)] text-lg">
+                        {icons[i]} <span>{plat}</span>
                     </div>
-                </form>
-                <div className='flex-col text-center justify-center items-center'>
-                    <h3 className='mb-4 text-lg font-medium mt-4 text-200'>Available at</h3>
-                    {verify ? 
-                        <div className='flex-col justify-center items-center font-bold text-center pl-5 text-700'>
-                            <p className='pl-76 mb-2 flex gap-2'>LinkedIn { linkedin ? <img width="24" height="24" src="https://img.icons8.com/color/48/verified-account--v1.png" alt="verified"/> : <img width="24" height="24" src="https://img.icons8.com/ios/50/verified-account.png" alt="n/a"/> } </p>
-                            <p className='pl-76 mb-2 flex gap-2'>Github { github ? <img width="24" height="24" src="https://img.icons8.com/color/48/verified-account--v1.png" alt="verified"/> : <img width="24" height="24" src="https://img.icons8.com/ios/50/verified-account.png" alt="n/a"/> } </p>
-                            <p className='pl-76 mb-2 flex gap-2'>LeetCode { leetcode ? <img width="24" height="24" src="https://img.icons8.com/color/48/verified-account--v1.png" alt="verified"/> : <img width="24" height="24" src="https://img.icons8.com/ios/50/verified-account.png" alt="n/a"/> } </p>
-                        </div>
-                    :   
-                        <div className='flex-col justify-center items-center font-bold text-center pl-5 text-700'>
-                            <p>Click CHECK to Verify.....</p>
-                            <div className='flex justify-center'>
-                                <video src={verifyVideo} autoPlay muted loop alt="verify video"className='h-24 w-24 rounded-full'>
-                                    Your browser does not support the video tag. Please update your browser.
-                                </video>
-                            </div>
-                            
-                        </div>
-                    }
-                </div>
-            </div>
-        </div>
-    )
-}
+                    <div className="flex items-center gap-3">
+                        {/* Show 'Visit' link ONLY when username is TAKEN */}
+                        {status === false && (
+                        <a
+                            href={url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="underline text-[var(--accent-100)] text-sm"
+                        >
+                            Visit
+                        </a>
+                        )}
+                        <span
+                        className={`px-2 py-1 rounded-full text-sm font-semibold transition-all ${
+                            status === null
+                            ? 'bg-yellow-400 text-black'
+                            : status
+                            ? 'bg-green-500 text-white'
+                            : 'bg-red-500 text-white'
+                        }`}
+                        >
+                        {status === null ? 'Checking' : status ? 'Available' : 'Taken'}
+                        </span>
+                    </div>
+                    </li>
+                );
+                })}
+            </ul>
+        </section>
 
-export default Container;
+      </main>
+    </div>
+  );
+}

@@ -1,1 +1,55 @@
-
+:root {
+    --primary-100: #6c35de;
+    --primary-200: #a364ff;
+    --primary-300: #ffc7ff;
+    --accent-100: #cb80ff;
+    --accent-200: #373737;
+    --text-100: #ffffff;
+    --text-200: #e0e0e0;
+    --bg-100: #241b35;
+    --bg-200: #342a45;
+    --bg-300: #4d425f;
+}
+:root,
+:root.dark {
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
+html, body {
+    transition: background 0.4s ease, color 0.4s ease;
+}
+  
+.dark {
+    --primary-100: #FF7F50;
+    --primary-200: #dd6236;
+    --primary-300: #8f1e00;
+    --accent-100: #8B4513;
+    --accent-200: #ffd299;
+    --text-100: #000000;
+    --text-200: #2c2c2c;
+    --bg-100: #F7EEDD;
+    --bg-200: #ede4d3;
+    --bg-300: #c4bcab;
+}
+body, html, .container { background: var(--bg-100); color: var(--text-200); }
+.sidebar { background: var(--primary-100); }
+.mode-toggle { background: var(--primary-300); color: var(--text-100); }
+.input { border-color: var(--primary-200); }
+.input:focus { box-shadow: 0 0 0 2px var(--primary-300); }
+.btn-primary { background: var(--primary-200); }
+.btn-primary:disabled { background: var(--accent-200); }
+.platform-item.available { border-color: var(--accent-100); }
+.platform-item.taken { border-color: var(--primary-300); }
+.platform-item.pending { border-color: var(--text-200); }
+.spinner { border-top-color: var(--primary-100); }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
