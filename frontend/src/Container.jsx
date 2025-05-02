@@ -65,7 +65,7 @@ export default function Container() {
     setAvailability({});
 
     try {
-      const res = await fetch('http://localhost:8000/checkUsername', {
+      const res = await fetch('https://beunique.onrender.com/checkUsername', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username: inputValue.trim() })
