@@ -6,10 +6,8 @@ import {
   FaHackerrank,
   FaTwitter,
   FaDev,
-  FaMedium,
   FaNpm,
   FaDocker,
-  FaBitbucket,
   FaKaggle,
   FaGamepad
 } from 'react-icons/fa';
@@ -33,10 +31,8 @@ export default function Container() {
     { key: 'hackerrank', label: 'HackerRank', icon: <FaHackerrank />, url: (u) => `https://www.hackerrank.com/profile/${u}` },
     { key: 'twitter', label: 'Twitter', icon: <FaTwitter />, url: (u) => `https://twitter.com/${u}` },
     { key: 'devto', label: 'Dev.to', icon: <FaDev />, url: (u) => `https://dev.to/${u}` },
-    { key: 'medium', label: 'Medium', icon: <FaMedium />, url: (u) => `https://medium.com/@${u}` },
     { key: 'npm', label: 'NPM', icon: <FaNpm />, url: (u) => `https://www.npmjs.com/~${u}` },
     { key: 'dockerhub', label: 'Docker Hub', icon: <FaDocker />, url: (u) => `https://hub.docker.com/u/${u}` },
-    { key: 'bitbucket', label: 'Bitbucket', icon: <FaBitbucket />, url: (u) => `https://bitbucket.org/${u}/` },
     { key: 'kaggle', label: 'Kaggle', icon: <FaKaggle />, url: (u) => `https://www.kaggle.com/${u}` },
     { key: 'codeforces', label: 'Codeforces', icon: <FaGamepad />, url: (u) => `https://codeforces.com/profile/${u}` }
   ];

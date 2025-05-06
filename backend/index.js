@@ -19,7 +19,7 @@ async function checkWithHead(url) {
   try {
     const res = await axios.head(url, { validateStatus: () => true });
     console.log(`HEAD request to ${url} returned status: ${res.status}`);
-    return res.status === 400 || res.status === 404 || res.status === 410 || res.status === 403;
+    return res.status === 400 || res.status === 404 || res.status === 410;
   } catch (err) {
     console.error(`Error checking HEAD for ${url}:`, err);
     return false;
@@ -34,10 +34,8 @@ app.post("/checkUsername", async (req, res) => {
     hackerrank: false,
     twitter: false,
     devto: false,
-    medium: false,
     npm: false,
     dockerhub: false,
-    bitbucket: false,
     kaggle: false,
     codeforces: false
   };
@@ -49,10 +47,8 @@ app.post("/checkUsername", async (req, res) => {
     hackerrank: `https://www.hackerrank.com/profile/${username}`,
     twitter: `https://twitter.com/${username}`,
     devto: `https://dev.to/${username}`,
-    medium: `https://medium.com/@${username}`,
     npm: `https://www.npmjs.com/~${username}`,
     dockerhub: `https://hub.docker.com/u/${username}`,
-    bitbucket: `https://bitbucket.org/${username}/`, 
     kaggle: `https://www.kaggle.com/${username}`,
     codeforces: `https://codeforces.com/profile/${username}`
   };
