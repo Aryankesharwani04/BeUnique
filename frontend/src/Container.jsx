@@ -5,8 +5,6 @@ import {
   FaCode,
   FaHackerrank,
   FaTwitter,
-  FaDev,
-  FaNpm,
   FaDocker,
   FaKaggle,
   FaGamepad
@@ -23,15 +21,12 @@ export default function Container() {
   const [checked, setChecked] = useState(false);
   const inputRef = useRef(null);
 
-  // Include LinkedIn at top; its status will be set only after check
   const platforms = [
     { key: 'linkedin', label: 'LinkedIn', icon: <FaLinkedin />, url: (u) => `https://www.linkedin.com/in/${u}` },
     { key: 'github', label: 'GitHub', icon: <FaGithub />, url: (u) => `https://github.com/${u}` },
     { key: 'leetcode', label: 'LeetCode', icon: <FaCode />, url: (u) => `https://leetcode.com/u/${u}` },
     { key: 'hackerrank', label: 'HackerRank', icon: <FaHackerrank />, url: (u) => `https://www.hackerrank.com/profile/${u}` },
     { key: 'twitter', label: 'Twitter', icon: <FaTwitter />, url: (u) => `https://twitter.com/${u}` },
-    { key: 'devto', label: 'Dev.to', icon: <FaDev />, url: (u) => `https://dev.to/${u}` },
-    { key: 'npm', label: 'NPM', icon: <FaNpm />, url: (u) => `https://www.npmjs.com/~${u}` },
     { key: 'dockerhub', label: 'Docker Hub', icon: <FaDocker />, url: (u) => `https://hub.docker.com/u/${u}` },
     { key: 'kaggle', label: 'Kaggle', icon: <FaKaggle />, url: (u) => `https://www.kaggle.com/${u}` },
     { key: 'codeforces', label: 'Codeforces', icon: <FaGamepad />, url: (u) => `https://codeforces.com/profile/${u}` }
@@ -70,12 +65,14 @@ export default function Container() {
       setAvailability({ linkedin: 'error', ...data });
 
       platforms.forEach(({ key, label }) => {
-        if (data[key]) toast.success(`${label} is available!`, { position: 'top-right', autoClose: 3000 });
+        if (data[key]?.available) {
+          toast.success(`${label} is available!`, { position: 'top-right', autoClose: 3000 });
+        }
       });
     } catch (err) {
       console.error(err);
       const errState = { linkedin: 'error' };
-      platforms.slice(1).forEach(({ key }) => { errState[key] = false; });
+      platforms.slice(1).forEach(({ key }) => { errState[key] = { available: false }; });
       setAvailability(errState);
     } finally {
       setLoading(false);
@@ -136,7 +133,7 @@ export default function Container() {
           </h3>
           <ul className="space-y-3">
             {platforms.map(({ key, label, icon, url }) => {
-              const status = availability[key];
+              const status = availability[key]?.available ?? null;
               const showLinkedinError = key === 'linkedin' && checked;
               return (
                 <li key={key} className={`flex justify-between items-center p-3 rounded-lg shadow-sm transform transition-all duration-300 hover:-translate-y-1 scale-95 platform-item ${status == null && !showLinkedinError ? 'opacity-50' : 'opacity-100 scale-100'}`} style={{ background: 'var(--bg-300)', transition: 'opacity 0.4s ease, transform 0.4s ease' }}>
@@ -144,7 +141,6 @@ export default function Container() {
                     {icon} <span>{label}</span>
                   </div>
                   <div className="flex items-center gap-3">
-                    {/* Show Visit for LinkedIn only after check, and for others if taken */}
                     {((key === 'linkedin' && showLinkedinError) || status === false) && (
                       <a href={url(inputValue)} target="_blank" rel="noopener noreferrer" className="underline text-[var(--accent-100)] text-sm">
                         Visit
@@ -159,7 +155,13 @@ export default function Container() {
                         ? 'bg-green-500 text-white'
                         : 'bg-red-500 text-white'
                     }`}>
-                      {showLinkedinError ? 'Internal Server error' : status == null ? 'Checking' : status ? 'Available' : 'Taken'}
+                      {showLinkedinError
+                        ? 'Internal Server error'
+                        : status == null
+                        ? 'Checking'
+                        : status
+                        ? 'Available'
+                        : 'Taken'}
                     </span>
                   </div>
                 </li>
